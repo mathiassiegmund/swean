@@ -1,0 +1,1139 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%lld": {
+      "shouldTranslate": false
+    },
+    "%lld of %lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld von %2$lld"
+          }
+        }
+      }
+    },
+    "%lld of %lld sorted": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld von %2$lld sortiert"
+          }
+        }
+      }
+    },
+    "%lld photos moved to the trash.": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld photo moved to the trash."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld photos moved to the trash."
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Foto in den Papierkorb gelegt."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Fotos in den Papierkorb gelegt."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld similar photos": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld similar photo"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld similar photos"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ähnliches Foto"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ähnliche Fotos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Album": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Album"
+          }
+        }
+      }
+    },
+    "All Done!": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles durchgesehen!"
+          }
+        }
+      }
+    },
+    "All items will be marked as unsorted again and the trash will be emptied. No photos will be deleted.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Medien gelten wieder als unsortiert, der Papierkorb wird geleert. Es werden keine Fotos gelöscht."
+          }
+        }
+      }
+    },
+    "Allow Access to All Photos": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zugriff auf alle Fotos erlauben"
+          }
+        }
+      }
+    },
+    "Allow Access to Photos": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zugriff auf Fotos erlauben"
+          }
+        }
+      }
+    },
+    "Allow Swean to access all photos in Settings.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erlaube Swean in den Einstellungen den Zugriff auf alle Fotos."
+          }
+        }
+      }
+    },
+    "Appearance": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Darstellung"
+          }
+        }
+      }
+    },
+    "BACK": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ZURÜCK"
+          }
+        }
+      }
+    },
+    "Back": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurück"
+          }
+        }
+      }
+    },
+    "Back to Overview": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zur Übersicht"
+          }
+        }
+      }
+    },
+    "Best Shot": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bestes Foto"
+          }
+        }
+      }
+    },
+    "By Month": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach Monat"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abbrechen"
+          }
+        }
+      }
+    },
+    "Change Selection": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auswahl ändern"
+          }
+        }
+      }
+    },
+    "Create": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstellen"
+          }
+        }
+      }
+    },
+    "Current Favorite": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktueller Favorit"
+          }
+        }
+      }
+    },
+    "DELETE": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LÖSCHEN"
+          }
+        }
+      }
+    },
+    "Dark": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dunkel"
+          }
+        }
+      }
+    },
+    "Delete %lld items": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Delete %lld item"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Delete %lld items"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Medium löschen"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Medien löschen"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Deleted %lld items. They stay in “Recently Deleted” in the Photos app for 30 days.": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Deleted %lld item. It stays in “Recently Deleted” in the Photos app for 30 days."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Deleted %lld items. They stay in “Recently Deleted” in the Photos app for 30 days."
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Medium gelöscht. Es bleibt noch 30 Tage unter „Zuletzt gelöscht“ in der Fotos-App."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Medien gelöscht. Sie bleiben noch 30 Tage unter „Zuletzt gelöscht“ in der Fotos-App."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Deletion Failed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Löschen fehlgeschlagen"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fertig"
+          }
+        }
+      }
+    },
+    "Done!": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erledigt!"
+          }
+        }
+      }
+    },
+    "Duel %lld of %lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duell %1$lld von %2$lld"
+          }
+        }
+      }
+    },
+    "Empty Trash (%lld)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Papierkorb leeren (%lld)"
+          }
+        }
+      }
+    },
+    "Error": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fehler"
+          }
+        }
+      }
+    },
+    "Favorite": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorit"
+          }
+        }
+      }
+    },
+    "In Trash – Keep": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Im Papierkorb – behalten"
+          }
+        }
+      }
+    },
+    "KEEP": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BEHALTEN"
+          }
+        }
+      }
+    },
+    "Keep": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Behalten"
+          }
+        }
+      }
+    },
+    "Keep All": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle behalten"
+          }
+        }
+      }
+    },
+    "Keep Both": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beide behalten"
+          }
+        }
+      }
+    },
+    "LIVE": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE"
+          }
+        }
+      }
+    },
+    "Legal Notice": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impressum"
+          }
+        }
+      }
+    },
+    "Light": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hell"
+          }
+        }
+      }
+    },
+    "Limited access – Swean only sees the photos you selected.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eingeschränkter Zugriff – Swean sieht nur die Fotos, die du ausgewählt hast."
+          }
+        }
+      }
+    },
+    "Loading photos …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotos werden geladen …"
+          }
+        }
+      }
+    },
+    "Move to Trash": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In den Papierkorb"
+          }
+        }
+      }
+    },
+    "Name": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      }
+    },
+    "New": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neu"
+          }
+        }
+      }
+    },
+    "New Album": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neues Album"
+          }
+        }
+      }
+    },
+    "Next Series": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächste Serie"
+          }
+        }
+      }
+    },
+    "No Access to Photos": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Zugriff auf Fotos"
+          }
+        }
+      }
+    },
+    "No Date": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ohne Datum"
+          }
+        }
+      }
+    },
+    "No Photos": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Fotos"
+          }
+        }
+      }
+    },
+    "No Series Found": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Serien gefunden"
+          }
+        }
+      }
+    },
+    "No photos or videos were found in your library.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In deiner Mediathek wurden keine Fotos oder Videos gefunden."
+          }
+        }
+      }
+    },
+    "Nothing to sort here.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hier gibt es nichts zu sortieren."
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "Open Settings": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen öffnen"
+          }
+        }
+      }
+    },
+    "Other Photo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anderes Foto"
+          }
+        }
+      }
+    },
+    "Privacy Policy": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datenschutzerklärung"
+          }
+        }
+      }
+    },
+    "Reset": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurücksetzen"
+          }
+        }
+      }
+    },
+    "Reset All Progress": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gesamten Fortschritt zurücksetzen"
+          }
+        }
+      }
+    },
+    "Reset progress?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortschritt zurücksetzen?"
+          }
+        }
+      }
+    },
+    "Screenshot": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildschirmfoto"
+          }
+        }
+      }
+    },
+    "Searching for series …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suche nach Serien …"
+          }
+        }
+      }
+    },
+    "Series Duel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serien-Duell"
+          }
+        }
+      }
+    },
+    "Shuffle": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zufallsmix"
+          }
+        }
+      }
+    },
+    "Start Over": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Von vorne ansehen"
+          }
+        }
+      }
+    },
+    "Swean": {
+      "shouldTranslate": false
+    },
+    "Swean found series of similar photos. Let them compete – the best one stays.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean hat Serien ähnlicher Fotos gefunden. Lass sie gegeneinander antreten – das beste bleibt."
+          }
+        }
+      }
+    },
+    "Swean looks for photos taken seconds apart that look almost the same.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean sucht nach Fotos, die kurz nacheinander aufgenommen wurden und fast gleich aussehen."
+          }
+        }
+      }
+    },
+    "Swipe a photo up to collect it here.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wische ein Foto nach oben, um es hier zu sammeln."
+          }
+        }
+      }
+    },
+    "Swipe left: keep": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach links wischen: behalten"
+          }
+        }
+      }
+    },
+    "Swipe right: go back": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach rechts wischen: zurück"
+          }
+        }
+      }
+    },
+    "Swipe up: move to trash": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach oben wischen: in den Papierkorb"
+          }
+        }
+      }
+    },
+    "System": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        }
+      }
+    },
+    "Tap a photo to keep it after all.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe auf ein Foto, um es doch zu behalten."
+          }
+        }
+      }
+    },
+    "Tap an album: file the photo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Album antippen: Foto einsortieren"
+          }
+        }
+      }
+    },
+    "Tap the better photo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe auf das bessere Foto"
+          }
+        }
+      }
+    },
+    "The current photo will be added right away.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das aktuelle Foto wird direkt hinzugefügt."
+          }
+        }
+      }
+    },
+    "This series is already sorted.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Serie ist schon sortiert."
+          }
+        }
+      }
+    },
+    "Trash": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Papierkorb"
+          }
+        }
+      }
+    },
+    "Trash Is Empty": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Papierkorb ist leer"
+          }
+        }
+      }
+    },
+    "Undo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rückgängig"
+          }
+        }
+      }
+    },
+    "You've reviewed everything in “%@”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du hast alles in „%@“ angesehen."
+          }
+        }
+      }
+    },
+    "Your photos never leave your iPhone.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Fotos verlassen nie dein iPhone."
+          }
+        }
+      }
+    },
+    "of %lld sorted": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "von %lld sortiert"
+          }
+        }
+      }
+    },
+    "privacy.apple.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloads, updates and – if you allow it – crash reports are handled by Apple. Apple's privacy policy applies to that."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloads, Updates und – falls du es erlaubst – Absturzberichte wickelt Apple ab. Dafür gilt die Datenschutzerklärung von Apple."
+          }
+        }
+      }
+    },
+    "privacy.apple.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App Store"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App Store"
+          }
+        }
+      }
+    },
+    "privacy.contact.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For questions about privacy, you'll find the contact details in the legal notice."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bei Fragen zum Datenschutz findest du die Kontaktdaten im Impressum."
+          }
+        }
+      }
+    },
+    "privacy.contact.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contact"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontakt"
+          }
+        }
+      }
+    },
+    "privacy.local.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean remembers which photos you have already reviewed or moved to the trash, as well as your appearance setting. This information is stored only on your device and is removed when you delete the app."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean merkt sich, welche Fotos du schon angesehen oder in den Papierkorb gelegt hast, und deine Darstellungs-Einstellung. Diese Angaben liegen nur auf deinem Gerät und werden gelöscht, wenn du die App löschst."
+          }
+        }
+      }
+    },
+    "privacy.local.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data on Your Device"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daten auf deinem Gerät"
+          }
+        }
+      }
+    },
+    "privacy.none.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean has no servers, no account, no analytics, no advertising and no third-party SDKs, and makes no network connections of its own."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean hat keine Server, kein Konto, keine Analyse-Tools, keine Werbung und keine Drittanbieter-SDKs und baut selbst keine Internetverbindungen auf."
+          }
+        }
+      }
+    },
+    "privacy.none.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Tracking"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Tracking"
+          }
+        }
+      }
+    },
+    "privacy.photos.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean accesses your photo library only on your device, to show you your photos and to carry out what you choose: filing photos into albums, marking favorites and deleting. To find series of similar photos, Swean analyzes small previews on your device. Your photos never leave your device. Photos stored in iCloud are downloaded by iOS itself so they can be displayed."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean greift nur auf deinem Gerät auf deine Fotomediathek zu, um dir deine Fotos zu zeigen und auszuführen, was du wählst: Fotos in Alben einsortieren, als Favorit markieren und löschen. Um Serien ähnlicher Fotos zu finden, analysiert Swean kleine Vorschaubilder auf deinem Gerät. Deine Fotos verlassen dein Gerät nicht. Fotos, die in iCloud liegen, lädt iOS selbst herunter, damit sie angezeigt werden können."
+          }
+        }
+      }
+    },
+    "privacy.photos.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Photos"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Fotos"
+          }
+        }
+      }
+    },
+    "privacy.summary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean does not collect, store or share any personal data."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean erhebt, speichert und teilt keine personenbezogenen Daten."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

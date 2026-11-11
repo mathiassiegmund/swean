@@ -1,0 +1,25 @@
+{
+  "sourceLanguage": "en",
+  "version": "1.0",
+  "strings": {
+    "CFBundleDisplayName": {
+      "shouldTranslate": false
+    },
+    "NSPhotoLibraryUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean needs access to your photos so you can review them, sort them into albums and delete them if you choose."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swean braucht Zugriff auf deine Fotos, um sie mit dir durchzusehen, in Alben zu sortieren und auf Wunsch zu löschen."
+          }
+        }
+      }
+    }
+  }
+}
