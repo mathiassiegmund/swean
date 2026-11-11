@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Vom Nutzer gewählte Darstellung. Standard: wie das System.
 enum AppAppearance: String, CaseIterable, Identifiable {
     case system, light, dark
 

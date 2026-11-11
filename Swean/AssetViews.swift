@@ -2,7 +2,6 @@ import SwiftUI
 import Photos
 import AVFoundation
 
-/// Zeigt ein Vorschaubild eines Mediums in der Größe des verfügbaren Platzes.
 struct AssetImage: View {
     let asset: PHAsset
     var contentMode: ContentMode = .fill
@@ -36,7 +35,6 @@ struct AssetImage: View {
     }
 }
 
-/// Große Karte in der Swipe-Ansicht, inkl. Videowiedergabe.
 struct MediaCard: View {
     let asset: PHAsset
     let isActive: Bool
