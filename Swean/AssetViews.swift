@@ -8,6 +8,8 @@ struct AssetImage: View {
 
     @Environment(\.displayScale) private var displayScale
     @State private var image: UIImage?
+    @State private var failed = false
+    @State private var attempt = 0
 
     var body: some View {
         GeometryReader { geo in
@@ -18,20 +20,51 @@ struct AssetImage: View {
                         .aspectRatio(contentMode: contentMode)
                         .frame(width: geo.size.width, height: geo.size.height)
                 } else {
-                    Rectangle().fill(Color(.tertiarySystemFill))
-                    if contentMode == .fit { ProgressView() }
+                    Rectangle().fill(Color(.secondarySystemFill))
+                    if failed {
+                        failedView(compact: contentMode == .fill)
+                    } else if contentMode == .fit {
+                        ProgressView()
+                    } else {
+                        Image(systemName: "photo")
+                            .font(.system(size: min(geo.size.width, geo.size.height) * 0.3))
+                            .foregroundStyle(.tertiary)
+                    }
                 }
             }
-            .task(id: "\(asset.localIdentifier)-\(Int(geo.size.width))x\(Int(geo.size.height))") {
+            .task(id: "\(asset.localIdentifier)-\(Int(geo.size.width))x\(Int(geo.size.height))-\(attempt)") {
                 guard geo.size.width > 0, geo.size.height > 0 else { return }
+                failed = false
                 let size = CGSize(width: geo.size.width * displayScale, height: geo.size.height * displayScale)
                 let mode: PHImageContentMode = contentMode == .fill ? .aspectFill : .aspectFit
-                for await img in ImageLoader.shared.images(for: asset, targetSize: size, contentMode: mode) {
-                    image = img
+                for await event in ImageLoader.shared.images(for: asset, targetSize: size, contentMode: mode) {
+                    switch event {
+                    case .image(let img): image = img
+                    case .failed: failed = true
+                    }
                 }
             }
         }
         .clipped()
+    }
+
+    @ViewBuilder
+    private func failedView(compact: Bool) -> some View {
+        if compact {
+            Image(systemName: "exclamationmark.icloud")
+                .foregroundStyle(.secondary)
+        } else {
+            VStack(spacing: 10) {
+                Image(systemName: "exclamationmark.icloud")
+                    .font(.largeTitle)
+                    .foregroundStyle(.secondary)
+                Text("Couldn't load photo")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Button("Try Again") { attempt += 1 }
+                    .buttonStyle(.bordered)
+            }
+        }
     }
 }
 

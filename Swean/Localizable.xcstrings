@@ -244,6 +244,16 @@
         }
       }
     },
+    "Couldn't load photo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto konnte nicht geladen werden"
+          }
+        }
+      }
+    },
     "Create": {
       "localizations": {
         "de": {
@@ -903,6 +913,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Papierkorb ist leer"
+          }
+        }
+      }
+    },
+    "Try Again": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut versuchen"
           }
         }
       }

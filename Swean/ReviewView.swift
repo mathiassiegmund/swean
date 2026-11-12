@@ -30,10 +30,12 @@ struct ReviewView: View {
     @State private var trashTrigger = 0
     @State private var keepTrigger = 0
 
+    /// Ein Schritt fürs Rückgängigmachen: merkt sich den Zustand des Fotos davor.
     private struct HistoryEntry {
         let id: String
         let index: Int
-        let trashed: Bool
+        let wasReviewed: Bool
+        let wasTrashed: Bool
     }
 
     private var current: PHAsset? { assets.indices.contains(index) ? assets[index] : nil }
@@ -309,9 +311,12 @@ struct ReviewView: View {
         let id = asset.localIdentifier
         let i = index
         keepTrigger += 1
+        let entry = HistoryEntry(id: id, index: i, wasReviewed: store.isReviewed(id), wasTrashed: store.isTrashed(id))
         flyOut(to: CGSize(width: -700, height: drag.height)) {
+            // Behalten holt ein Foto auch wieder aus dem Papierkorb (z. B. nach Löschen → Zurück).
+            if entry.wasTrashed { store.restore(id) }
             store.markReviewed(id)
-            history.append(HistoryEntry(id: id, index: i, trashed: false))
+            history.append(entry)
             index = i + 1
         }
     }
@@ -321,10 +326,11 @@ struct ReviewView: View {
         let id = asset.localIdentifier
         let i = index
         let wasTrashed = store.isTrashed(id)
+        let wasReviewed = store.isReviewed(id)
         trashTrigger += 1
         flyOut(to: CGSize(width: drag.width, height: -1000)) {
             store.moveToTrash(id)
-            if !wasTrashed { history.append(HistoryEntry(id: id, index: i, trashed: true)) }
+            history.append(HistoryEntry(id: id, index: i, wasReviewed: wasReviewed, wasTrashed: wasTrashed))
             index = i + 1
         }
     }
@@ -339,8 +345,8 @@ struct ReviewView: View {
 
     private func undo() {
         guard let last = history.popLast() else { return }
-        if last.trashed { store.restore(last.id) }
-        store.unmarkReviewed(last.id)
+        if last.wasTrashed { store.moveToTrash(last.id) } else { store.restore(last.id) }
+        if last.wasReviewed { store.markReviewed(last.id) } else { store.unmarkReviewed(last.id) }
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             index = assets.firstIndex { $0.localIdentifier == last.id } ?? min(last.index, assets.count)
         }

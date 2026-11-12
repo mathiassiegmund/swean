@@ -106,6 +106,13 @@ enum SeriesFinder {
 
     /// Kleines Vorschaubild laden (nur lokal, kein iCloud-Download) und Merkmale berechnen.
     static func signature(for asset: PHAsset) -> Signature? {
+        // Vorrang für die Oberfläche: warten, solange dort Bilder geladen werden
+        // (höchstens 2 Sekunden pro Foto, damit die Suche nie ganz stehen bleibt).
+        var waited = 0
+        while ImageLoader.shared.isBusy && waited < 40 {
+            Thread.sleep(forTimeInterval: 0.05)
+            waited += 1
+        }
         let options = PHImageRequestOptions()
         options.isSynchronous = true
         options.deliveryMode = .highQualityFormat
@@ -205,17 +212,23 @@ final class SeriesStore {
         series.assets.filter { !store.isTrashed($0.localIdentifier) && !removed.contains($0.localIdentifier) }
     }
 
+    /// Wie viele Gruppen gleichzeitig analysiert werden. Mehr bringt kaum Tempo,
+    /// bremst aber das Laden der Vorschaubilder in der Oberfläche.
+    private static let parallelClusters = 3
+
     func scan(months: [MonthGroup]) {
+        // Solange die Mediathek noch nicht geladen ist, nichts tun. Ein leerer Lauf
+        // würde sonst den Zwischenspeicher leeren und alles müsste neu analysiert werden.
+        guard !months.isEmpty else { return }
         let total = months.reduce(0) { $0 + $1.assets.count }
         let signature = "\(months.count)|\(total)|\(months.first?.assets.first?.localIdentifier ?? "")"
         guard signature != lastSignature else { return }
         lastSignature = signature
 
-        let photos = months.flatMap(\.assets)
+        let photos = Array(months.flatMap(\.assets)
             .filter { $0.mediaType == .image && !$0.mediaSubtypes.contains(.photoScreenshot) }
-            .reversed()
+            .reversed())
         let byID = Dictionary(photos.map { ($0.localIdentifier, $0) }, uniquingKeysWith: { a, _ in a })
-        let knownCache = cache
 
         scanTask?.cancel()
         isScanning = true
@@ -224,42 +237,81 @@ final class SeriesStore {
             #if DEBUG
             let started = Date()
             #endif
-            let (groups, newCache) = await Task.detached(priority: .utility) { () -> ([[String]], [String: [[String]]]) in
-                let clusters = SeriesFinder.timeClusters(Array(photos))
-                var result: [[String]] = []
-                var updated: [String: [[String]]] = [:]
-                for (i, cluster) in clusters.enumerated() {
-                    if Task.isCancelled { break }
-                    let key = SeriesFinder.cacheKey(for: cluster)
-                    let groups = knownCache[key] ?? SeriesFinder.similarGroups(in: cluster)
-                    updated[key] = groups
-                    result.append(contentsOf: groups)
-                    if i % 5 == 0 {
-                        let value = Double(i + 1) / Double(clusters.count)
-                        Task { @MainActor in self.progress = value }
-                    }
-                }
-                return (result, updated)
+            // Neueste Gruppen zuerst: die interessieren meist am meisten und erscheinen so sofort.
+            let clusters: [[PHAsset]] = await Task.detached(priority: .utility) {
+                Array(SeriesFinder.timeClusters(photos).reversed())
             }.value
             guard !Task.isCancelled else { return }
-            // Neueste Serien zuerst.
-            series = groups.reversed().compactMap { ids in
-                let assets = ids.compactMap { byID[$0] }
-                return assets.count >= 2 ? PhotoSeries(id: ids[0], assets: assets) : nil
+
+            let keys = clusters.map(SeriesFinder.cacheKey(for:))
+            var results = [[[String]]?](repeating: nil, count: clusters.count)
+            var pending: [Int] = []
+            for i in clusters.indices {
+                if let cached = cache[keys[i]] { results[i] = cached } else { pending.append(i) }
             }
-            cache = newCache
+            publish(results, byID: byID)
+            var finished = clusters.count - pending.count
+            progress = clusters.isEmpty ? 1 : Double(finished) / Double(clusters.count)
+
+            await withTaskGroup(of: (Int, [[String]]).self) { group in
+                var queue = pending.makeIterator()
+                func enqueue() {
+                    guard let i = queue.next() else { return }
+                    let cluster = clusters[i]
+                    group.addTask(priority: .utility) { (i, SeriesFinder.similarGroups(in: cluster)) }
+                }
+                for _ in 0..<Self.parallelClusters { enqueue() }
+                var sinceSave = 0
+                while let (i, groups) = await group.next() {
+                    if Task.isCancelled { group.cancelAll(); break }
+                    results[i] = groups
+                    cache[keys[i]] = groups
+                    finished += 1
+                    sinceSave += 1
+                    progress = Double(finished) / Double(clusters.count)
+                    // Zwischenstand zeigen und sichern, damit ein Abbruch nichts verliert.
+                    if sinceSave >= 25 {
+                        sinceSave = 0
+                        publish(results, byID: byID)
+                        saveCache()
+                    }
+                    enqueue()
+                }
+            }
+            guard !Task.isCancelled else {
+                saveCache()
+                return
+            }
+            // Einträge für Gruppen, die es nicht mehr gibt, verwerfen.
+            if !keys.isEmpty {
+                let current = Set(keys)
+                cache = cache.filter { current.contains($0.key) }
+            }
+            publish(results, byID: byID)
+            saveCache()
             isScanning = false
             progress = 1
             #if DEBUG
-            print("Swean: \(series.count) Serien gefunden in \(String(format: "%.0f", Date().timeIntervalSince(started) * 1000)) ms")
+            print("Swean: \(series.count) Serien gefunden in \(String(format: "%.0f", Date().timeIntervalSince(started) * 1000)) ms (\(pending.count) von \(clusters.count) Gruppen neu analysiert)")
             #endif
-            let snapshot = newCache
-            Task.detached(priority: .utility) {
-                if let data = try? JSONEncoder().encode(snapshot) {
-                    try? FileManager.default.createDirectory(at: SeriesStore.cacheURL.deletingLastPathComponent(), withIntermediateDirectories: true)
-                    try? data.write(to: SeriesStore.cacheURL, options: .atomic)
-                }
+        }
+    }
+
+    private func publish(_ results: [[[String]]?], byID: [String: PHAsset]) {
+        series = results.compactMap { $0 }.flatMap { groups in
+            groups.reversed().compactMap { ids -> PhotoSeries? in
+                let assets = ids.compactMap { byID[$0] }
+                return assets.count >= 2 ? PhotoSeries(id: ids[0], assets: assets) : nil
             }
+        }
+    }
+
+    private func saveCache() {
+        let snapshot = cache
+        Task.detached(priority: .utility) {
+            guard let data = try? JSONEncoder().encode(snapshot) else { return }
+            try? FileManager.default.createDirectory(at: SeriesStore.cacheURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try? data.write(to: SeriesStore.cacheURL, options: .atomic)
         }
     }
 

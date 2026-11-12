@@ -251,19 +251,79 @@ final class ImageLoader {
     static let shared = ImageLoader()
     let manager = PHCachingImageManager()
 
-    func images(for asset: PHAsset, targetSize: CGSize, contentMode: PHImageContentMode) -> AsyncStream<UIImage> {
+    /// Zahl der Bildanfragen, auf die die Oberfläche gerade wartet. Die Seriensuche
+    /// pausiert, solange sie größer als null ist, damit sichtbare Bilder Vorrang haben.
+    /// Hängende Anfragen (z. B. ein langsamer iCloud-Download) zählen nach einer Sekunde
+    /// ohne Bewegung nicht mehr, damit die Suche nicht endlos wartet.
+    private let activeLock = NSLock()
+    private var activeRequests = 0
+    private var lastActivity = Date.distantPast
+
+    var isBusy: Bool {
+        activeLock.lock(); defer { activeLock.unlock() }
+        return activeRequests > 0 && Date().timeIntervalSince(lastActivity) < 1
+    }
+
+    private func changeActive(by delta: Int) {
+        activeLock.lock()
+        activeRequests += delta
+        if delta > 0 { lastActivity = Date() }
+        activeLock.unlock()
+    }
+
+    private func noteActivity() {
+        activeLock.lock(); lastActivity = Date(); activeLock.unlock()
+    }
+
+    enum ImageEvent {
+        case image(UIImage)
+        /// Kein Bild bekommen, auch nicht im zweiten Versuch (z. B. iCloud-Download fehlgeschlagen).
+        case failed
+    }
+
+    /// Liefert erst ein schnelles, dann das scharfe Bild. Kommt am Ende kein Bild an,
+    /// wird einmal mit höchster Qualität nachgeladen, danach `.failed` gemeldet.
+    func images(for asset: PHAsset, targetSize: CGSize, contentMode: PHImageContentMode) -> AsyncStream<ImageEvent> {
         let manager = self.manager
         return AsyncStream { continuation in
-            let options = PHImageRequestOptions()
-            options.isNetworkAccessAllowed = true
-            options.deliveryMode = .opportunistic
-            options.resizeMode = .fast
-            let id = manager.requestImage(for: asset, targetSize: targetSize, contentMode: contentMode, options: options) { image, info in
-                if let image { continuation.yield(image) }
-                let degraded = (info?[PHImageResultIsDegradedKey] as? Bool) ?? false
-                if !degraded { continuation.finish() }
+            final class State: @unchecked Sendable {
+                var requestID: PHImageRequestID = PHInvalidImageRequestID
+                var gotImage = false
             }
-            continuation.onTermination = { _ in manager.cancelImageRequest(id) }
+            let state = State()
+            self.changeActive(by: 1)
+
+            func request(_ mode: PHImageRequestOptionsDeliveryMode, isRetry: Bool) {
+                let options = PHImageRequestOptions()
+                options.isNetworkAccessAllowed = true
+                options.deliveryMode = mode
+                options.resizeMode = isRetry ? .exact : .fast
+                state.requestID = manager.requestImage(for: asset, targetSize: targetSize, contentMode: contentMode, options: options) { image, info in
+                    if (info?[PHImageCancelledKey] as? Bool) == true {
+                        continuation.finish()
+                        return
+                    }
+                    self.noteActivity()
+                    if let image {
+                        state.gotImage = true
+                        continuation.yield(.image(image))
+                    }
+                    let degraded = (info?[PHImageResultIsDegradedKey] as? Bool) ?? false
+                    guard !degraded else { return }
+                    let finalImageMissing = image == nil
+                    if finalImageMissing && !isRetry {
+                        request(.highQualityFormat, isRetry: true)
+                    } else {
+                        if finalImageMissing && !state.gotImage { continuation.yield(.failed) }
+                        continuation.finish()
+                    }
+                }
+            }
+            request(.opportunistic, isRetry: false)
+            continuation.onTermination = { [weak self] _ in
+                manager.cancelImageRequest(state.requestID)
+                self?.changeActive(by: -1)
+            }
         }
     }
 
