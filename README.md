@@ -3,7 +3,9 @@
 Swean helps you clean up your photo library on iPhone. Swipe photos up to move them to the trash, swipe left to keep them, and file them into albums with a tap. **Series Duel** finds series of near-identical shots and lets them compete until the best one remains.
 
 Everything happens on your device — no account, no servers, no analytics, no third-party SDKs.
-
+<p align="center">
+  <img src="Swean/Assets.xcassets/AppIcon.appiconset/icon-1024.png" width="400" alt="Swean App Logo">
+</p>
 <p align="center">
   <img src="AppStore/Screenshots/en/01-welcome.png" width="200" alt="Welcome screen">
   <img src="AppStore/Screenshots/en/03-swipe.png" width="200" alt="Swiping through photos">
