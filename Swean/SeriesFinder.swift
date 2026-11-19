@@ -3,7 +3,7 @@ import UIKit
 import Vision
 import Observation
 
-/// Eine Serie fast gleicher Fotos, z. B. mehrere Aufnahmen vom selben Motiv.
+/// A series of nearly identical photos, e.g. several shots of the same subject.
 struct PhotoSeries: Identifiable, Hashable {
     let id: String
     let assets: [PHAsset]
@@ -14,31 +14,31 @@ struct PhotoSeries: Identifiable, Hashable {
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
 }
 
-/// Findet Serien in zwei Schritten: Erst werden Fotos gesammelt, die kurz
-/// nacheinander aufgenommen wurden. Nur diese werden dann per Vision
-/// („Feature Print“) auf Ähnlichkeit verglichen, mit einem Pixelvergleich als
-/// Ersatz. Alles läuft auf dem Gerät.
+/// Finds series in two steps: first, photos taken in quick succession are
+/// grouped together. Only those are then compared for similarity using Vision
+/// ("feature print"), with a pixel comparison as fallback. Everything runs
+/// on device.
 enum SeriesFinder {
-    /// Maximaler Abstand zwischen zwei Aufnahmen einer Serie.
+    /// Maximum time between two shots of the same series.
     static let maxGap: TimeInterval = 90
-    /// Maximale Vision-Distanz. Gemessen: gleiche Serie 0,04–0,10,
-    /// verschiedene Motive ab ca. 0,22.
+    /// Maximum Vision distance. Measured: same series 0.04–0.10,
+    /// different subjects from about 0.22.
     static let maxVisionDistance: Float = 0.25
-    /// Maximale Pixel-Distanz (Ersatzverfahren). Gemessen: gleiche Serie
-    /// bis 0,018, verschiedene Motive ab ca. 0,046.
+    /// Maximum pixel distance (fallback). Measured: same series up to
+    /// 0.018, different subjects from about 0.046.
     static let maxPixelDistance: Float = 0.04
     private static let pixelSide = 24
 
-    /// Merkmale eines Fotos für den Vergleich.
+    /// Features of a photo used for comparison.
     enum Signature {
-        /// Vision-Feature-Print (Standard auf dem iPhone).
+        /// Vision feature print (default on iPhone).
         case vision(VNFeaturePrintObservation)
-        /// Verkleinertes Farbbild (Ersatz, falls Vision nicht verfügbar ist, z. B. im Simulator).
+        /// Downscaled color image (fallback when Vision is unavailable, e.g. in the Simulator).
         case pixels([Float])
     }
 
-    /// Fotos (ohne Videos und Bildschirmfotos), aufsteigend nach Datum,
-    /// gruppiert nach zeitlicher Nähe. Nur Gruppen ab 2 Fotos.
+    /// Photos (no videos or screenshots), sorted ascending by date,
+    /// grouped by proximity in time. Only groups of at least 2 photos.
     static func timeClusters(_ assets: [PHAsset]) -> [[PHAsset]] {
         var clusters: [[PHAsset]] = []
         var current: [PHAsset] = []
@@ -61,8 +61,8 @@ enum SeriesFinder {
         "\(cluster.first!.localIdentifier)|\(cluster.last!.localIdentifier)|\(cluster.count)"
     }
 
-    /// Teilt eine zeitliche Gruppe in Serien wirklich ähnlicher Fotos.
-    /// Ein Foto gehört zur laufenden Serie, wenn es dem vorherigen oder dem ersten Foto ähnelt.
+    /// Splits a time cluster into series of truly similar photos.
+    /// A photo joins the current series if it resembles the previous or the first photo.
     static func similarGroups(in cluster: [PHAsset]) -> [[String]] {
         let signatures = cluster.map(signature(for:))
         var groups: [[String]] = []
@@ -104,10 +104,10 @@ enum SeriesFinder {
         }
     }
 
-    /// Kleines Vorschaubild laden (nur lokal, kein iCloud-Download) und Merkmale berechnen.
+    /// Loads a small thumbnail (local only, no iCloud download) and computes its features.
     static func signature(for asset: PHAsset) -> Signature? {
-        // Vorrang für die Oberfläche: warten, solange dort Bilder geladen werden
-        // (höchstens 2 Sekunden pro Foto, damit die Suche nie ganz stehen bleibt).
+        // Give the UI priority: wait while it is loading images
+        // (at most 2 seconds per photo, so the scan never stalls completely).
         var waited = 0
         while ImageLoader.shared.isBusy && waited < 40 {
             Thread.sleep(forTimeInterval: 0.05)
@@ -125,7 +125,7 @@ enum SeriesFinder {
         }
         guard let image = result, let cgImage = image.cgImage else { return nil }
         #if !targetEnvironment(simulator)
-        // Im Simulator liefert Vision für jedes Bild denselben Feature Print, daher dort nur das Ersatzverfahren.
+        // In the Simulator, Vision returns the same feature print for every image, so only the fallback is used there.
         if let print = visionPrint(cgImage, orientation: CGImagePropertyOrientation(image.imageOrientation)) {
             return .vision(print)
         }
@@ -179,9 +179,8 @@ private extension CGImagePropertyOrientation {
     }
 }
 
-/// Hält die gefundenen Serien und sucht im Hintergrund danach.
-/// Ergebnisse pro Zeitgruppe werden zwischengespeichert, damit ein erneuter
-/// Scan nur neue Fotos analysiert.
+/// Holds the detected series and searches for them in the background.
+/// Results are cached per time cluster, so a rescan only analyzes new photos.
 @MainActor
 @Observable
 final class SeriesStore {
@@ -203,7 +202,7 @@ final class SeriesStore {
         }
     }
 
-    /// Serien, in denen noch mindestens zwei Fotos übrig sind und die noch nicht entschieden wurden.
+    /// Series that still have at least two photos left and have not been decided yet.
     func open(store: ReviewStore, removed: Set<String>) -> [PhotoSeries] {
         series.filter { !store.isSeriesFinished($0.id) && available(in: $0, store: store, removed: removed).count >= 2 }
     }
@@ -212,13 +211,13 @@ final class SeriesStore {
         series.assets.filter { !store.isTrashed($0.localIdentifier) && !removed.contains($0.localIdentifier) }
     }
 
-    /// Wie viele Gruppen gleichzeitig analysiert werden. Mehr bringt kaum Tempo,
-    /// bremst aber das Laden der Vorschaubilder in der Oberfläche.
+    /// How many clusters are analyzed concurrently. More barely improves speed
+    /// but slows down thumbnail loading in the UI.
     private static let parallelClusters = 3
 
     func scan(months: [MonthGroup]) {
-        // Solange die Mediathek noch nicht geladen ist, nichts tun. Ein leerer Lauf
-        // würde sonst den Zwischenspeicher leeren und alles müsste neu analysiert werden.
+        // Do nothing until the library has loaded. An empty run would otherwise
+        // clear the cache and everything would have to be analyzed again.
         guard !months.isEmpty else { return }
         let total = months.reduce(0) { $0 + $1.assets.count }
         let signature = "\(months.count)|\(total)|\(months.first?.assets.first?.localIdentifier ?? "")"
@@ -237,7 +236,7 @@ final class SeriesStore {
             #if DEBUG
             let started = Date()
             #endif
-            // Neueste Gruppen zuerst: die interessieren meist am meisten und erscheinen so sofort.
+            // Newest clusters first: they are usually the most interesting and show up right away.
             let clusters: [[PHAsset]] = await Task.detached(priority: .utility) {
                 Array(SeriesFinder.timeClusters(photos).reversed())
             }.value
@@ -269,7 +268,7 @@ final class SeriesStore {
                     finished += 1
                     sinceSave += 1
                     progress = Double(finished) / Double(clusters.count)
-                    // Zwischenstand zeigen und sichern, damit ein Abbruch nichts verliert.
+                    // Publish and persist intermediate results so a cancellation loses nothing.
                     if sinceSave >= 25 {
                         sinceSave = 0
                         publish(results, byID: byID)
@@ -282,7 +281,7 @@ final class SeriesStore {
                 saveCache()
                 return
             }
-            // Einträge für Gruppen, die es nicht mehr gibt, verwerfen.
+            // Drop entries for clusters that no longer exist.
             if !keys.isEmpty {
                 let current = Set(keys)
                 cache = cache.filter { current.contains($0.key) }
@@ -292,7 +291,7 @@ final class SeriesStore {
             isScanning = false
             progress = 1
             #if DEBUG
-            print("Swean: \(series.count) Serien gefunden in \(String(format: "%.0f", Date().timeIntervalSince(started) * 1000)) ms (\(pending.count) von \(clusters.count) Gruppen neu analysiert)")
+            print("Swean: found \(series.count) series in \(String(format: "%.0f", Date().timeIntervalSince(started) * 1000)) ms (\(pending.count) of \(clusters.count) clusters newly analyzed)")
             #endif
         }
     }

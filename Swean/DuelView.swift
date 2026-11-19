@@ -79,8 +79,6 @@ private struct SeriesRow: View {
     }
 }
 
-/// Das Duell: Der aktuelle Favorit tritt gegen das nächste Foto der Serie an.
-/// Antippen wählt das bessere Foto, das andere wandert in den Papierkorb.
 struct DuelView: View {
     @State private var series: PhotoSeries
 
@@ -241,7 +239,6 @@ struct DuelView: View {
         }
     }
 
-    // MARK: - Aktionen
 
     private func load() {
         assets = seriesStore.available(in: series, store: store, removed: library.removedIDs)

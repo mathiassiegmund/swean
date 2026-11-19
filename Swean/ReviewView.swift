@@ -1,8 +1,6 @@
 import SwiftUI
 import Photos
 
-/// Die Swipe-Ansicht: ein Foto nach dem anderen.
-/// ↑ Papierkorb · ← behalten · → zurück · Album-Chip antippen: einsortieren
 struct ReviewView: View {
     let title: String
     @State private var assets: [PHAsset]
@@ -30,7 +28,6 @@ struct ReviewView: View {
     @State private var trashTrigger = 0
     @State private var keepTrigger = 0
 
-    /// Ein Schritt fürs Rückgängigmachen: merkt sich den Zustand des Fotos davor.
     private struct HistoryEntry {
         let id: String
         let index: Int
@@ -105,7 +102,6 @@ struct ReviewView: View {
         }
     }
 
-    // MARK: - Teile
 
     @ViewBuilder
     private func header(_ asset: PHAsset) -> some View {
@@ -266,7 +262,6 @@ struct ReviewView: View {
         }
     }
 
-    // MARK: - Gesten & Aktionen
 
     private var swipeGesture: some Gesture {
         DragGesture(minimumDistance: 10)

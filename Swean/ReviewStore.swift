@@ -1,8 +1,6 @@
 import Foundation
 import Observation
 
-/// Merkt sich, welche Medien schon durchgesehen wurden und welche im
-/// (App-eigenen) Papierkorb liegen. Gespeichert als JSON in Application Support.
 @MainActor
 @Observable
 final class ReviewStore {
@@ -85,7 +83,6 @@ final class ReviewStore {
         scheduleSave()
     }
 
-    // MARK: - Speichern
 
     private func scheduleSave() {
         saveTask?.cancel()
