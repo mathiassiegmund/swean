@@ -4,7 +4,6 @@ import UIKit
 import AVFoundation
 import Observation
 
-/// Alle Medien eines Kalendermonats (oder eine andere Auswahl, z. B. der Zufallsmix).
 struct MonthGroup: Identifiable, Hashable {
     let id: String
     let title: String
@@ -18,7 +17,6 @@ struct MonthGroup: Identifiable, Hashable {
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
 }
 
-/// Zugriff auf die Fotomediathek: Laden, Alben, Favoriten, Löschen.
 @MainActor
 @Observable
 final class PhotoLibrary: NSObject {
@@ -26,8 +24,6 @@ final class PhotoLibrary: NSObject {
     var months: [MonthGroup] = []
     var albums: [PHAssetCollection] = []
     var isLoading = false
-    /// IDs von Medien, die seit dem Start gelöscht wurden (in Swean oder anderswo).
-    /// Offene Ansichten nutzen das, um verschwundene Fotos auszublenden.
     private(set) var removedIDs: Set<String> = []
 
     @ObservationIgnored private var allAssets: PHFetchResult<PHAsset>?
@@ -69,7 +65,6 @@ final class PhotoLibrary: NSObject {
     }
 
     #if DEBUG
-    /// Nur für Screenshots: Startargument `-SweanDemoAlbums "Bali,Berlin"` legt fehlende Alben an.
     private func seedDemoAlbumsIfRequested() async {
         guard let names = UserDefaults.standard.string(forKey: "SweanDemoAlbums") else { return }
         let existing = Set(PhotoLibrary.fetchAlbums().compactMap(\.localizedTitle))
@@ -79,7 +74,6 @@ final class PhotoLibrary: NSObject {
     }
     #endif
 
-    /// Öffnet die iOS-Auswahl, mit der man bei eingeschränktem Zugriff weitere Fotos freigibt.
     func presentLimitedLibraryPicker() {
         let scene = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
@@ -106,7 +100,6 @@ final class PhotoLibrary: NSObject {
         isLoading = false
     }
 
-    // MARK: - Laden
 
     nonisolated static func buildMonths() -> (PHFetchResult<PHAsset>, [MonthGroup]) {
         let options = PHFetchOptions()
@@ -207,8 +200,6 @@ final class PhotoLibrary: NSObject {
         }
     }
 
-    /// Löscht Medien. iOS zeigt dabei selbst eine Bestätigung an; gelöschte Medien
-    /// landen 30 Tage im Album „Zuletzt gelöscht“.
     func delete(_ assets: [PHAsset]) async throws {
         try await PHPhotoLibrary.shared().performChanges {
             PHAssetChangeRequest.deleteAssets(assets as NSArray)
@@ -246,15 +237,10 @@ extension PhotoLibrary: PHPhotoLibraryChangeObserver {
     }
 }
 
-/// Lädt Vorschaubilder und Videos über PhotoKit (inkl. iCloud-Download).
 final class ImageLoader {
     static let shared = ImageLoader()
     let manager = PHCachingImageManager()
 
-    /// Zahl der Bildanfragen, auf die die Oberfläche gerade wartet. Die Seriensuche
-    /// pausiert, solange sie größer als null ist, damit sichtbare Bilder Vorrang haben.
-    /// Hängende Anfragen (z. B. ein langsamer iCloud-Download) zählen nach einer Sekunde
-    /// ohne Bewegung nicht mehr, damit die Suche nicht endlos wartet.
     private let activeLock = NSLock()
     private var activeRequests = 0
     private var lastActivity = Date.distantPast
@@ -277,12 +263,9 @@ final class ImageLoader {
 
     enum ImageEvent {
         case image(UIImage)
-        /// Kein Bild bekommen, auch nicht im zweiten Versuch (z. B. iCloud-Download fehlgeschlagen).
         case failed
     }
 
-    /// Liefert erst ein schnelles, dann das scharfe Bild. Kommt am Ende kein Bild an,
-    /// wird einmal mit höchster Qualität nachgeladen, danach `.failed` gemeldet.
     func images(for asset: PHAsset, targetSize: CGSize, contentMode: PHImageContentMode) -> AsyncStream<ImageEvent> {
         let manager = self.manager
         return AsyncStream { continuation in

@@ -1,9 +1,6 @@
 import SwiftUI
 import Photos
 
-/// Sammelt alle nach oben gewischten Medien. Erst hier wird wirklich gelöscht –
-/// iOS fragt dann noch einmal nach, und die Medien liegen anschließend
-/// 30 Tage unter „Zuletzt gelöscht“.
 struct TrashView: View {
     let showsDoneButton: Bool
 

@@ -4,8 +4,6 @@ enum LegalLinks {
     static let imprint = URL(string: "https://mathiassiegmund.de/impressum")!
 }
 
-/// Datenschutzerklärung in der App. Der Text steht im String-Katalog
-/// (Schlüssel „privacy.*“), damit er auf Deutsch und Englisch vorliegt.
 struct PrivacyView: View {
     @Environment(\.dismiss) private var dismiss
 
