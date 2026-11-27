@@ -266,7 +266,17 @@ final class ImageLoader {
         case failed
     }
 
-    func images(for asset: PHAsset, targetSize: CGSize, contentMode: PHImageContentMode) -> AsyncStream<ImageEvent> {
+    /// Target size for the zoom view: full resolution, but the longest side capped at `maxDimension`
+    /// so that e.g. 48 MP photos don't take up ~200 MB of memory.
+    static func zoomTargetSize(pixelWidth: Int, pixelHeight: Int, maxDimension: CGFloat = 4096) -> CGSize {
+        guard pixelWidth > 0, pixelHeight > 0 else { return CGSize(width: maxDimension, height: maxDimension) }
+        let w = CGFloat(pixelWidth), h = CGFloat(pixelHeight)
+        let scale = min(1, maxDimension / max(w, h))
+        return CGSize(width: (w * scale).rounded(), height: (h * scale).rounded())
+    }
+
+    /// `exactSize` forces `.exact` so large requests don't unexpectedly return the full-size original.
+    func images(for asset: PHAsset, targetSize: CGSize, contentMode: PHImageContentMode, exactSize: Bool = false) -> AsyncStream<ImageEvent> {
         let manager = self.manager
         return AsyncStream { continuation in
             final class State: @unchecked Sendable {
@@ -280,7 +290,7 @@ final class ImageLoader {
                 let options = PHImageRequestOptions()
                 options.isNetworkAccessAllowed = true
                 options.deliveryMode = mode
-                options.resizeMode = isRetry ? .exact : .fast
+                options.resizeMode = (isRetry || exactSize) ? .exact : .fast
                 state.requestID = manager.requestImage(for: asset, targetSize: targetSize, contentMode: contentMode, options: options) { image, info in
                     if (info?[PHImageCancelledKey] as? Bool) == true {
                         continuation.finish()

@@ -27,6 +27,13 @@ struct ReviewView: View {
     @State private var errorMessage: String?
     @State private var trashTrigger = 0
     @State private var keepTrigger = 0
+    @State private var zoomTarget: ZoomTarget?
+    @State private var pendingZoomAction: (() -> Void)?
+
+    private struct ZoomTarget: Identifiable {
+        let asset: PHAsset
+        var id: String { asset.localIdentifier }
+    }
 
     private struct HistoryEntry {
         let id: String
@@ -75,6 +82,16 @@ struct ReviewView: View {
         }
         .sheet(isPresented: $showTrash) {
             NavigationStack { TrashView(showsDoneButton: true) }
+        }
+        .fullScreenCover(item: $zoomTarget, onDismiss: runPendingZoomAction) { target in
+            PhotoZoomView(
+                asset: target.asset,
+                isFavorite: isFavorite(target.asset),
+                onTrash: { pendingZoomAction = { trashCurrent() } },
+                onToggleFavorite: { toggleFavorite(target.asset) },
+                onKeep: { pendingZoomAction = { keepCurrent() } }
+            )
+            .presentationBackground(.clear)
         }
         .alert("New Album", isPresented: $showNewAlbum) {
             TextField("Name", text: $newAlbumName)
@@ -138,8 +155,20 @@ struct ReviewView: View {
         return ZStack {
             ForEach(visible.reversed(), id: \.localIdentifier) { asset in
                 let isTop = asset.localIdentifier == top.localIdentifier
+                let canZoom = isTop && asset.mediaType == .image
                 MediaCard(asset: asset, isActive: isTop)
+                    .overlay(alignment: .topTrailing) {
+                        if canZoom { zoomButton(asset) }
+                    }
                     .overlay { if isTop { dragHint } }
+                    .gesture(TapGesture(count: 2).onEnded { openZoom(asset) },
+                             including: canZoom ? .all : .subviews)
+                    .simultaneousGesture(MagnifyGesture().onChanged { value in
+                        if value.magnification > 1.15 { openZoom(asset) }
+                    }, including: canZoom ? .all : .subviews)
+                    .accessibilityAction(named: Text("Zoom")) {
+                        if canZoom { openZoom(asset) }
+                    }
                     .scaleEffect(isTop ? 1 : 0.92 + 0.08 * progress)
                     .opacity(isTop ? 1 : 0.4 + 0.6 * progress)
                     .offset(isTop ? drag : .zero)
@@ -152,6 +181,20 @@ struct ReviewView: View {
         .frame(maxHeight: .infinity)
         .contentShape(Rectangle())
         .gesture(swipeGesture)
+    }
+
+    private func zoomButton(_ asset: PHAsset) -> some View {
+        Button { openZoom(asset) } label: {
+            Image(systemName: "plus.magnifyingglass")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.primary)
+                .frame(width: 40, height: 40)
+                .background(.ultraThinMaterial, in: Circle())
+        }
+        .buttonStyle(.plain)
+        .padding(12)
+        .opacity(drag == .zero ? 1 : 0)
+        .accessibilityLabel("Zoom")
     }
 
     @ViewBuilder
@@ -266,11 +309,12 @@ struct ReviewView: View {
     private var swipeGesture: some Gesture {
         DragGesture(minimumDistance: 10)
             .onChanged { value in
-                guard !isAnimatingOut else { return }
+                guard !isAnimatingOut, zoomTarget == nil else { return }
                 drag = value.translation
             }
             .onEnded { value in
                 guard !isAnimatingOut else { return }
+                guard zoomTarget == nil else { drag = .zero; return }
                 let t = value.translation
                 let p = value.predictedEndTranslation
                 let vertical = abs(t.height) > abs(t.width)
@@ -284,6 +328,20 @@ struct ReviewView: View {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { drag = .zero }
                 }
             }
+    }
+
+    private func openZoom(_ asset: PHAsset) {
+        guard !isAnimatingOut, zoomTarget == nil, asset.mediaType == .image,
+              asset.localIdentifier == current?.localIdentifier else { return }
+        drag = .zero
+        zoomTarget = ZoomTarget(asset: asset)
+    }
+
+    /// Decisions made in the zoom view run after it is dismissed, so the card visibly flies out.
+    private func runPendingZoomAction() {
+        let action = pendingZoomAction
+        pendingZoomAction = nil
+        action?()
     }
 
     private func flyOut(to offset: CGSize, then action: @escaping () -> Void) {

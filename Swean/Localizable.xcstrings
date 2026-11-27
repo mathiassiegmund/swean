@@ -244,6 +244,16 @@
         }
       }
     },
+    "Close": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schließen"
+          }
+        }
+      }
+    },
     "Couldn't load photo": {
       "localizations": {
         "de": {
@@ -530,6 +540,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Eingeschränkter Zugriff – Swean sieht nur die Fotos, die du ausgewählt hast."
+          }
+        }
+      }
+    },
+    "Loading full resolution": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volle Auflösung wird geladen"
           }
         }
       }
@@ -953,6 +973,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Deine Fotos verlassen nie dein iPhone."
+          }
+        }
+      }
+    },
+    "Zoom": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoomen"
           }
         }
       }
