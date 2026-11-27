@@ -244,6 +244,26 @@
         }
       }
     },
+    "Choose This Photo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Foto nehmen"
+          }
+        }
+      }
+    },
+    "Close": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schließen"
+          }
+        }
+      }
+    },
     "Couldn't load photo": {
       "localizations": {
         "de": {
@@ -534,6 +554,16 @@
         }
       }
     },
+    "Loading full resolution": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volle Auflösung wird geladen"
+          }
+        }
+      }
+    },
     "Loading photos …": {
       "localizations": {
         "de": {
@@ -680,6 +710,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Anderes Foto"
+          }
+        }
+      }
+    },
+    "Photo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto"
           }
         }
       }
@@ -953,6 +993,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Deine Fotos verlassen nie dein iPhone."
+          }
+        }
+      }
+    },
+    "Zoom": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoomen"
           }
         }
       }
