@@ -93,6 +93,26 @@ struct DuelView: View {
     @State private var steps: [Step] = []
     @State private var loaded = false
     @State private var pickTrigger = 0
+    @State private var zoomTarget: ZoomTarget?
+    @State private var pendingZoomAction: (() -> Void)?
+    @State private var zoomTrigger = 0
+    @State private var press: Press?
+    @State private var pressTask: Task<Void, Never>?
+
+    /// A touch on a duel card: a short tap picks the photo, holding it opens the zoom view.
+    private struct Press: Equatable {
+        let id: String
+        var isActive = true
+        var openedZoom = false
+    }
+
+    /// The duel pair being compared in the zoom view; `startsWithChampion` picks the photo shown first.
+    private struct ZoomTarget: Identifiable {
+        let champion: PHAsset
+        let challenger: PHAsset
+        let startsWithChampion: Bool
+        var id: String { champion.localIdentifier + "|" + challenger.localIdentifier }
+    }
 
     private struct Step {
         let loser: String?
@@ -134,6 +154,28 @@ struct DuelView: View {
             }
         }
         .sensoryFeedback(.selection, trigger: pickTrigger)
+        .sensoryFeedback(.impact(weight: .light), trigger: zoomTrigger)
+        .fullScreenCover(item: $zoomTarget, onDismiss: runPendingZoomAction) { target in
+            PhotoZoomView(
+                assets: [target.champion, target.challenger],
+                titles: [Text("Current Favorite"), Text("Other Photo")],
+                initialIndex: target.startsWithChampion ? 0 : 1
+            ) { asset, dismissZoom in
+                Button {
+                    let championWins = asset.localIdentifier == target.champion.localIdentifier
+                    pendingZoomAction = { pick(championWins: championWins) }
+                    dismissZoom()
+                } label: {
+                    Label("Choose This Photo", systemImage: "crown.fill")
+                        .font(.headline)
+                        .padding(.horizontal, 22)
+                        .frame(height: 54)
+                        .background(Color.accentColor, in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+            .presentationBackground(.clear)
+        }
         .onAppear { if !loaded { load() } }
         .onChange(of: isDone) { _, done in
             guard done, assets.indices.contains(championIndex) else { return }
@@ -175,23 +217,40 @@ struct DuelView: View {
     }
 
     private func card(for asset: PHAsset, isChampion: Bool) -> some View {
-        Button {
-            pick(championWins: isChampion)
-        } label: {
-            MediaCard(asset: asset, isActive: false)
-                .overlay(alignment: .topLeading) {
-                    if isChampion {
-                        Label("Current Favorite", systemImage: "crown.fill")
-                            .font(.caption.bold())
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(Color.accentColor, in: Capsule())
-                            .padding(10)
-                    }
+        MediaCard(asset: asset, isActive: false)
+            .overlay(alignment: .topLeading) {
+                if isChampion {
+                    Label("Current Favorite", systemImage: "crown.fill")
+                        .font(.caption.bold())
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color.accentColor, in: Capsule())
+                        .padding(10)
                 }
+            }
+            .scaleEffect(press?.id == asset.localIdentifier && press?.isActive == true ? 0.97 : 1)
+            .animation(.easeOut(duration: 0.15), value: press?.isActive)
+            .contentShape(Rectangle())
+            .gesture(pressGesture(for: asset, isChampion: isChampion))
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction { pick(championWins: isChampion) }
+        .overlay(alignment: .topTrailing) {
+            if asset.mediaType == .image {
+                Button { openZoom(startingWithChampion: isChampion) } label: {
+                    Image(systemName: "plus.magnifyingglass")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.primary)
+                        .frame(width: 40, height: 40)
+                        .background(.ultraThinMaterial, in: Circle())
+                }
+                .buttonStyle(.plain)
+                .padding(10)
+                .accessibilityLabel("Zoom")
+            }
         }
-        .buttonStyle(DuelCardStyle())
+        .accessibilityAction(named: Text("Zoom")) { openZoom(startingWithChampion: isChampion) }
         .id(asset.localIdentifier)
         .transition(.asymmetric(insertion: .scale(scale: 0.9).combined(with: .opacity),
                                 removal: .move(edge: .top).combined(with: .opacity)))
@@ -261,6 +320,52 @@ struct DuelView: View {
         }
     }
 
+    /// Tap and long press in one gesture. SwiftUI's tap gesture has no time limit and wins over
+    /// `onLongPressGesture`, and a Button fires when a long press ends, so neither works here.
+    private func pressGesture(for asset: PHAsset, isChampion: Bool) -> some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                if press == nil {
+                    press = Press(id: asset.localIdentifier)
+                    pressTask = Task {
+                        try? await Task.sleep(for: .milliseconds(350))
+                        guard !Task.isCancelled, press?.isActive == true else { return }
+                        press?.isActive = false
+                        press?.openedZoom = true
+                        openZoom(startingWithChampion: isChampion)
+                    }
+                } else if hypot(value.translation.width, value.translation.height) > 12 {
+                    pressTask?.cancel()
+                    press?.isActive = false
+                }
+            }
+            .onEnded { _ in
+                pressTask?.cancel()
+                let wasTap = press?.isActive == true && press?.openedZoom == false
+                press = nil
+                if wasTap { pick(championWins: isChampion) }
+            }
+    }
+
+    private func openZoom(startingWithChampion: Bool) {
+        guard !isDone, zoomTarget == nil,
+              assets.indices.contains(championIndex), assets.indices.contains(challengerIndex) else { return }
+        let champion = assets[championIndex], challenger = assets[challengerIndex]
+        guard champion.mediaType == .image || challenger.mediaType == .image else { return }
+        zoomTrigger += 1
+        zoomTarget = ZoomTarget(champion: champion, challenger: challenger, startsWithChampion: startingWithChampion)
+    }
+
+    /// A pick made in the zoom view runs after it is dismissed, so the duel animation is visible.
+    private func runPendingZoomAction() {
+        // Presenting the zoom view cancels the card gesture without calling `onEnded`, so reset it here.
+        pressTask?.cancel()
+        press = nil
+        let action = pendingZoomAction
+        pendingZoomAction = nil
+        action?()
+    }
+
     private func keepBoth() {
         guard !isDone else { return }
         let kept = assets[challengerIndex].localIdentifier
@@ -288,13 +393,5 @@ struct DuelView: View {
             championIndex = last.champion
             challengerIndex = last.challenger
         }
-    }
-}
-
-private struct DuelCardStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.97 : 1)
-            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }

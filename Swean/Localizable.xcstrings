@@ -244,6 +244,16 @@
         }
       }
     },
+    "Choose This Photo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Foto nehmen"
+          }
+        }
+      }
+    },
     "Close": {
       "localizations": {
         "de": {
@@ -700,6 +710,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Anderes Foto"
+          }
+        }
+      }
+    },
+    "Photo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto"
           }
         }
       }

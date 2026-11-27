@@ -84,13 +84,23 @@ struct ReviewView: View {
             NavigationStack { TrashView(showsDoneButton: true) }
         }
         .fullScreenCover(item: $zoomTarget, onDismiss: runPendingZoomAction) { target in
-            PhotoZoomView(
-                asset: target.asset,
-                isFavorite: isFavorite(target.asset),
-                onTrash: { pendingZoomAction = { trashCurrent() } },
-                onToggleFavorite: { toggleFavorite(target.asset) },
-                onKeep: { pendingZoomAction = { keepCurrent() } }
-            )
+            PhotoZoomView(assets: [target.asset]) { asset, dismissZoom in
+                ZoomActionButton(icon: "trash.fill", color: .red) {
+                    pendingZoomAction = { trashCurrent() }
+                    dismissZoom()
+                }
+                .accessibilityLabel("Move to Trash")
+                ZoomActionButton(icon: isFavorite(asset) ? "heart.fill" : "heart", color: .pink) {
+                    toggleFavorite(asset)
+                }
+                .accessibilityLabel("Favorite")
+                .accessibilityAddTraits(isFavorite(asset) ? .isSelected : [])
+                ZoomActionButton(icon: "checkmark", color: .green) {
+                    pendingZoomAction = { keepCurrent() }
+                    dismissZoom()
+                }
+                .accessibilityLabel("Keep")
+            }
             .presentationBackground(.clear)
         }
         .alert("New Album", isPresented: $showNewAlbum) {
